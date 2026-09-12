@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# Notes-only releases: no binaries are built or attached. The project's
+# rule is that every tool is compiled locally by the consumer's Go
+# toolchain; the GitHub Release just publishes the notes from the
+# annotated tag message.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so the annotated tag object is available for
+          # the release notes.
+          fetch-depth: 0
+
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Cache go build cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/go-build
+          key: ${{ runner.os }}-gocache-${{ hashFiles('go.sum') }}
+          restore-keys: ${{ runner.os }}-gocache-
+
+      - name: Install pandoc (pinned for Markdown lint/format)
+        run: |
+          wget -q https://github.com/jgm/pandoc/releases/download/3.11/pandoc-3.11-1-amd64.deb
+          sudo dpkg -i pandoc-3.11-1-amd64.deb
+          pandoc --version | head -1
+
+      - name: Warm the module cache
+        run: go mod download
+
+      # go-canon cannot be a tool directive in its own module, so its
+      # Taskfile drives the freshly built local command.
+      - name: Full pipeline
+        run: |
+          go build ./...
+          go tool task lint
+          go tool task test
+
+      - name: Create the release from the annotated tag message
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          NOTES="$(git tag -l --format='%(contents:body)' "$TAG")"
+          if [ -z "$(printf '%s' "$NOTES" | tr -d '[:space:]')" ]; then
+            echo "::error::$TAG carries no annotated message — release notes come from: git tag -a vX.Y.Z -m '...'"
+            exit 1
+          fi
+          gh release create "$TAG" --title "$TAG" --verify-tag --notes "$NOTES"

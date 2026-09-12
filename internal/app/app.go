@@ -15,7 +15,8 @@ import (
 	"github.com/SynthLuvlr/go-canon/internal/tools"
 )
 
-const usage = `go-canon — shared Go toolchain gates and presets (` + tools.CanonVersion + `)
+// usage is the top-level help text, stamped with this build's version.
+var usage = `go-canon — shared Go toolchain gates and presets (` + tools.ResolveVersion() + `)
 
 Usage:
   go-canon lint [flags] [paths...]    static pipeline: build, lint, idioms,
@@ -26,6 +27,7 @@ Usage:
   go-canon check [flags]              lint, then test
   go-canon doctor                     environment diagnostics
   go-canon migrate [flags]            adopt go-canon in an existing repo
+  go-canon --version                  print this build's version
 
 Flags:
   --fast         skip the slow gates (govulncheck, dupl, markdown)
@@ -63,6 +65,9 @@ func Run(argv []string, r execx.Runner, stdout, stderr io.Writer) int {
 	switch cmd {
 	case "-h", "--help", "help":
 		fmt.Fprint(stdout, usage)
+		return 0
+	case "-v", "--version", "version":
+		fmt.Fprintf(stdout, "go-canon %s\n", tools.ResolveVersion())
 		return 0
 	case "lint":
 		return withEnv(args, r, stdout, stderr, runLint)

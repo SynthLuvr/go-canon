@@ -65,7 +65,7 @@ func runDoctor(args []string, r execx.Runner, stdout io.Writer) int {
 		fmt.Fprintf(stdout, "go-canon: parse flags: %v\n", err)
 		return 2
 	}
-	fmt.Fprintf(stdout, "go-canon %s\n\n", tools.CanonVersion)
+	fmt.Fprintf(stdout, "go-canon %s\n\n", tools.ResolveVersion())
 	d := &doctorReport{stdout: stdout}
 
 	root, err := module.Root()
@@ -103,10 +103,13 @@ func doctorGo(d *doctorReport, r execx.Runner) {
 		d.fail("could not parse go version from %q", strings.TrimSpace(string(out)))
 		return
 	}
-	if atLeast(version, tools.GoVersion) {
-		d.ok("go %s (needs >= %s)", version, tools.GoVersion)
-	} else {
-		d.warn("go %s is older than the validated %s (GOTOOLCHAIN=auto upgrades it from go.mod)", version, tools.GoVersion)
+	switch {
+	case atLeast(version, tools.GoVersion):
+		d.ok("go %s (validated %s)", version, tools.GoVersion)
+	case atLeast(version, tools.GoFloor):
+		d.ok("go %s (floor >= %s; validated %s)", version, tools.GoFloor, tools.GoVersion)
+	default:
+		d.warn("go %s is older than the required %s (GOTOOLCHAIN=auto upgrades it from go.mod)", version, tools.GoFloor)
 	}
 	if toolchain, err := r.Output("go", "env", "GOTOOLCHAIN"); err == nil {
 		d.ok("GOTOOLCHAIN=%s", strings.TrimSpace(string(toolchain)))

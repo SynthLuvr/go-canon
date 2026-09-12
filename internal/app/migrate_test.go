@@ -12,7 +12,17 @@ import (
 
 const oldGoMod = "module nova\n\ngo 1.22\n"
 
+// withRelease stamps a fake released go-canon version so migrate plans
+// its self-pin; test binaries otherwise resolve as development builds.
+func withRelease(t *testing.T, version string) {
+	t.Helper()
+	orig := tools.CanonVersion
+	tools.CanonVersion = version
+	t.Cleanup(func() { tools.CanonVersion = orig })
+}
+
 func TestMigrateDryRunPlansEverything(t *testing.T) {
+	withRelease(t, "v0.9.9")
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte(oldGoMod), 0o600); err != nil {
 		t.Fatal(err)
@@ -24,8 +34,8 @@ func TestMigrateDryRunPlansEverything(t *testing.T) {
 	}
 	got := out.String()
 	for _, want := range []string{
-		"[dry-run] go mod edit -go=" + tools.GoVersion + " (tool directives need go >= 1.24)",
-		"[dry-run] go get -tool " + tools.CanonPkg + "@" + tools.CanonVersion,
+		"[dry-run] go mod edit -go=" + tools.GoFloor + " (go-canon's pinned toolchain needs go >= " + tools.GoFloor + ")",
+		"[dry-run] go get -tool " + tools.CanonPkg + "@v0.9.9",
 		"[dry-run] go get -tool " + tools.GoTools[0].Pkg + "@" + tools.GoTools[0].Version,
 		"[dry-run] go get -tool " + tools.GoTools[1].Pkg + "@" + tools.GoTools[1].Version,
 		"[dry-run] go get -tool " + tools.GoTools[2].Pkg + "@" + tools.GoTools[2].Version,
@@ -68,12 +78,16 @@ func TestMigrateDryRunSkipsExistingPins(t *testing.T) {
 	if strings.Contains(out.String(), "go get -tool") {
 		t.Errorf("plan re-pins already-pinned tools:\n%s", out.String())
 	}
+	if strings.Contains(out.String(), "warning: development build") {
+		t.Errorf("plan warns about a dev build even though go-canon is pinned:\n%s", out.String())
+	}
 	if strings.Contains(out.String(), "go mod edit -go") {
 		t.Errorf("plan bumps an already-new-enough go directive:\n%s", out.String())
 	}
 }
 
 func TestMigrateApplies(t *testing.T) {
+	withRelease(t, "v0.9.9")
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module nova\n\ngo 1.27\n"), 0o600); err != nil {
 		t.Fatal(err)
@@ -122,6 +136,40 @@ func TestMigrateApplies(t *testing.T) {
 	}
 	if len(edits) != 1 || edits[0] != "go mod tidy" {
 		t.Errorf("go module edits = %v, want only the final tidy", edits)
+	}
+}
+
+// TestMigrateDevBuildSkipsSelfPin covers development builds (no
+// resolved release): migrate pins the other tools, warns, and skips
+// the go-canon self-pin instead of inventing a version.
+func TestMigrateDevBuildSkipsSelfPin(t *testing.T) {
+	root := t.TempDir()
+	if err := os.WriteFile(filepath.Join(root, "go.mod"), []byte("module nova\n\ngo 1.27\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fake := &testrunner.Fake{}
+	var dryOut, errOut strings.Builder
+	if code := Run([]string{"migrate", "--dry-run", "--dir", root}, fake, &dryOut, &errOut); code != 0 {
+		t.Fatalf("migrate --dry-run exit = %d, output:\n%s%s", code, dryOut.String(), errOut.String())
+	}
+	if !strings.Contains(dryOut.String(), "warning: development build") {
+		t.Errorf("dry-run missing the development-build warning:\n%s", dryOut.String())
+	}
+	if strings.Contains(dryOut.String(), "[dry-run] go get -tool "+tools.CanonPkg+"@") {
+		t.Errorf("dry-run pins a go-canon version from a dev build:\n%s", dryOut.String())
+	}
+	var out strings.Builder
+	if code := Run([]string{"migrate", "--dir", root}, fake, &out, &errOut); code != 0 {
+		t.Fatalf("migrate exit = %d, stderr:\n%s", code, errOut.String())
+	}
+	var getPins int
+	for _, cmd := range fake.Commands {
+		if strings.HasPrefix(cmd, "go get -tool ") {
+			getPins++
+		}
+	}
+	if getPins != 4 {
+		t.Errorf("go get -tool ran %d times, want 4 without the self-pin", getPins)
 	}
 }
 

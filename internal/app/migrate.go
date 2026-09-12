@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/SynthLuvlr/go-canon/internal/execx"
@@ -109,17 +108,22 @@ func planMigrate(r execx.Runner, root, gomod string) []action {
 	var actions []action
 
 	if m := goDirective.FindStringSubmatch(gomod); m != nil {
-		if minor, _ := strconv.Atoi(m[2]); minor < 24 {
+		if !atLeast(m[1]+"."+m[2], tools.GoFloor) {
 			actions = append(actions, action{
-				desc: "go mod edit -go=" + tools.GoVersion + " (tool directives need go >= 1.24)",
+				desc: "go mod edit -go=" + tools.GoFloor + " (go-canon's pinned toolchain needs go >= " + tools.GoFloor + ")",
 				apply: func() error {
-					return runGo(r, "mod", "edit", "-go="+tools.GoVersion)
+					return runGo(r, "mod", "edit", "-go="+tools.GoFloor)
 				},
 			})
 		}
 	}
 
-	pinned := slices.Concat(tools.GoTools, []tools.Tool{tools.TaskTool, tools.CanonTool})
+	pinned := slices.Concat(tools.GoTools, []tools.Tool{tools.TaskTool})
+	if release := tools.CanonRelease(); release != "" {
+		canon := tools.CanonTool
+		canon.Version = release
+		pinned = append(pinned, canon)
+	}
 	for _, t := range pinned {
 		if strings.Contains(gomod, t.Pkg) {
 			continue
@@ -128,6 +132,15 @@ func planMigrate(r execx.Runner, root, gomod string) []action {
 			desc: "go get -tool " + t.Pkg + "@" + t.Version,
 			apply: func() error {
 				return runGo(r, "get", "-tool", t.Pkg+"@"+t.Version)
+			},
+		})
+	}
+
+	if !strings.Contains(gomod, tools.CanonPkg) && tools.CanonRelease() == "" {
+		actions = append(actions, action{
+			desc: "warning: development build — pin go-canon manually: go get -tool " + tools.CanonPkg + "@vX.Y.Z",
+			apply: func() error {
+				return nil
 			},
 		})
 	}
