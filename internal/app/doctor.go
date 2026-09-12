@@ -68,12 +68,12 @@ func runDoctor(args []string, r execx.Runner, stdout io.Writer) int {
 	fmt.Fprintf(stdout, "go-canon %s\n\n", tools.CanonVersion)
 	d := &doctorReport{stdout: stdout}
 
-	if root, err := module.Root(); err == nil {
-		fmt.Fprintf(stdout, "module %s\n\n", root)
-	} else {
+	root, err := module.Root()
+	if err != nil {
 		d.fail("no go.mod found — run inside a Go module")
 		return 1
 	}
+	fmt.Fprintf(stdout, "module %s\n\n", root)
 
 	doctorGo(d, r)
 	doctorTools(d, r)
@@ -124,24 +124,24 @@ func doctorTools(d *doctorReport, r execx.Runner) {
 	doctorOneTool(d, r, tools.TaskTool, false)
 }
 
-// doctorOneTool checks one tool: resolution is hard for go-canon-driven
-// tools, advisory for task.
+// doctorOneTool checks one tool; problems are reported through fail for
+// the tools go-canon drives and through warn for the optional task.
 func doctorOneTool(d *doctorReport, r execx.Runner, t tools.Tool, required bool) {
+	report := d.warn
+	if required {
+		report = d.fail
+	}
 	if _, err := r.Resolve(t.Name); err != nil {
 		if required {
-			d.fail("%s: %v", t.Name, err)
+			report("%s: %v", t.Name, err)
 		} else {
-			d.warn("%s not resolvable (optional): %v", t.Name, err)
+			report("%s not resolvable (optional): %v", t.Name, err)
 		}
 		return
 	}
 	pinned, err := r.Output("go", "list", "-m", "-f", "{{.Version}}", t.Module)
 	if err != nil {
-		if required {
-			d.fail("%s pinned version unknown: %v", t.Name, err)
-		} else {
-			d.warn("%s pinned version unknown: %v", t.Name, err)
-		}
+		report("%s pinned version unknown: %v", t.Name, err)
 		return
 	}
 	v := strings.TrimSpace(string(pinned))

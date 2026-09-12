@@ -95,7 +95,8 @@ func withEnv(args []string, r execx.Runner, stdout, stderr io.Writer, fn func(*e
 	return fn(e)
 }
 
-// setup parses shared flags, finds the module root, and loads config.
+// setup parses the shared flags, resolves the module root, loads its
+// config, and chdirs to the root so gates run from a known base.
 func setup(args []string, r execx.Runner, stdout, stderr io.Writer) (*env, error) {
 	flags := flag.NewFlagSet("go-canon", flag.ContinueOnError)
 	flags.SetOutput(stderr)

@@ -1,5 +1,5 @@
 // Package markdown enforces pandoc-normalized GFM (LF) across the
-// module's markdown files, mirroring the ts-canon markdown gate.
+// module's markdown files.
 package markdown
 
 import (
@@ -61,7 +61,7 @@ func excluded(rel string, exclude []string) bool {
 	for _, pattern := range exclude {
 		matched, err := filepath.Match(pattern, rel)
 		if err != nil {
-			// An invalid pattern never excludes; Files validated it first.
+			// A malformed pattern matches nothing rather than failing the walk.
 			return false
 		}
 		if matched {

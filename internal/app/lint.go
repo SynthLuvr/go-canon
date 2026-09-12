@@ -9,17 +9,10 @@ import (
 	"github.com/SynthLuvlr/go-canon/internal/markdown"
 )
 
-// runLint runs the fail-fast static pipeline:
-//
-//  1. go build ./...          — the type check (tsc analog)
-//  2. golangci-lint run       — linters + formatters, from the merged
-//     effective config (.go-canon/golangci.yml)
-//  3. modernize ./...         — idiom gate (non-zero on findings)
-//  4. go mod tidy -diff       — module/lockfile freshness
-//  5. govulncheck ./...       — SCA, symbol-level (skipped by --fast)
-//  6. pandoc markdown check   — byte-identical GFM (skipped by --fast)
-//
-// --fast also disables the dupl gate inside golangci-lint.
+// runLint runs the fail-fast static pipeline: go build, golangci-lint
+// (from the merged effective config), modernize, go mod tidy -diff,
+// then govulncheck and the pandoc markdown check unless --fast, which
+// also disables the dupl gate inside golangci-lint.
 func runLint(e *env) int {
 	cfgPath, cleanup, err := e.writeEffectiveConfig()
 	if err != nil {
@@ -29,10 +22,11 @@ func runLint(e *env) int {
 	defer cleanup()
 
 	paths := e.targetPaths()
-	golangciArgs := append([]string{"run", "--config", cfgPath}, paths...)
+	golangciArgs := []string{"run", "--config", cfgPath}
 	if e.fast {
-		golangciArgs = append([]string{"run", "--config", cfgPath, "--disable=dupl"}, paths...)
+		golangciArgs = append(golangciArgs, "--disable=dupl")
 	}
+	golangciArgs = append(golangciArgs, paths...)
 
 	steps := []step{
 		e.cmd("go build", "go", append([]string{"build"}, paths...)...),
@@ -41,8 +35,7 @@ func runLint(e *env) int {
 		e.cmd("go mod tidy -diff", "go", "mod", "tidy", "-diff"),
 	}
 	if !e.fast {
-		steps = append(steps, e.cmd("govulncheck", "govulncheck", paths...))
-		steps = append(steps, e.markdownCheck())
+		steps = append(steps, e.cmd("govulncheck", "govulncheck", paths...), e.markdownCheck())
 	}
 	return e.run(steps)
 }

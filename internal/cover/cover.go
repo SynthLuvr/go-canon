@@ -15,10 +15,8 @@ func ParseTotal(out string) (float64, error) {
 		if !strings.HasPrefix(line, "total:") {
 			continue
 		}
+		// The "total:" prefix guarantees at least one field.
 		fields := strings.Fields(line)
-		if len(fields) == 0 {
-			break
-		}
 		last := fields[len(fields)-1]
 		pct, err := strconv.ParseFloat(strings.TrimSuffix(last, "%"), 64)
 		if err != nil {

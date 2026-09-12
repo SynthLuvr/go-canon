@@ -3,7 +3,7 @@
 //
 // golangci-lint v2 has no config inheritance, so go-canon writes the merged
 // result to .go-canon/golangci.yml at invocation time and passes it via
-// --config (canonist's generated-effective-config pattern).
+// --config.
 package golangci
 
 import (

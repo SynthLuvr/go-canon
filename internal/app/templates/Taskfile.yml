@@ -1,4 +1,4 @@
-// Taskfile for go-canon-driven repos; migrate writes this verbatim.
+# Taskfile for go-canon-driven repos; migrate writes this verbatim.
 version: "3"
 
 tasks:

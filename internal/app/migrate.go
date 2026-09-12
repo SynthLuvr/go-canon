@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -105,17 +106,15 @@ func planMigrate(r execx.Runner, root, gomod string) []action {
 		}
 	}
 
-	pinned := append([]tools.Tool{}, tools.GoTools...)
-	pinned = append(pinned, tools.TaskTool, tools.CanonTool)
+	pinned := slices.Concat(tools.GoTools, []tools.Tool{tools.TaskTool, tools.CanonTool})
 	for _, t := range pinned {
 		if strings.Contains(gomod, t.Pkg) {
 			continue
 		}
-		tool := t
 		actions = append(actions, action{
-			desc: "go get -tool " + tool.Pkg + "@" + tool.Version,
+			desc: "go get -tool " + t.Pkg + "@" + t.Version,
 			apply: func() error {
-				return runGo(r, "get", "-tool", tool.Pkg+"@"+tool.Version)
+				return runGo(r, "get", "-tool", t.Pkg+"@"+t.Version)
 			},
 		})
 	}

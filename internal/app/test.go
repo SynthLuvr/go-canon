@@ -44,7 +44,7 @@ func runTest(e *env) int {
 	return 0
 }
 
-// runCheck runs lint, then test (the `poe check` analog).
+// runCheck runs lint, then test.
 func runCheck(e *env) int {
 	if code := runLint(e); code != 0 {
 		return code
