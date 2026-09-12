@@ -77,10 +77,24 @@ func runMigrate(args []string, r execx.Runner, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stdout, "[dry-run] %d planned change(s)\n", len(actions))
 		return 0
 	}
+	// Child tools need the target repo as their cwd while migrate
+	// runs, but the chdir must not leak to the caller: Windows
+	// cannot delete a directory tree containing the process's
+	// working directory, which breaks t.TempDir cleanup in tests.
+	origWd, err := os.Getwd()
+	if err != nil {
+		fmt.Fprintf(stderr, "go-canon: get working directory: %v\n", err)
+		return 1
+	}
 	if err := os.Chdir(root); err != nil {
 		fmt.Fprintf(stderr, "go-canon: chdir %s: %v\n", root, err)
 		return 1
 	}
+	defer func() {
+		if restoreErr := os.Chdir(origWd); restoreErr != nil {
+			fmt.Fprintf(stderr, "go-canon: restore working directory: %v\n", restoreErr)
+		}
+	}()
 	for _, a := range actions {
 		fmt.Fprintf(stdout, "go-canon: %s\n", a.desc)
 		if err := a.apply(); err != nil {
