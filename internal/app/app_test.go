@@ -324,7 +324,7 @@ func TestTestCommandCoverageGate(t *testing.T) {
 			writeModule(t, map[string]string{"go.mod": scratchGoMod})
 			fake := &testrunner.Fake{
 				OutputFn: func(name string, args []string) ([]byte, error) {
-					if name == "cover" {
+					if name == "go" {
 						return []byte(tt.coverOut), nil
 					}
 					return nil, fmt.Errorf("unexpected output call: %s %v", name, args)
@@ -337,8 +337,8 @@ func TestTestCommandCoverageGate(t *testing.T) {
 			if !fake.Has("go test ./... -race -covermode=atomic -coverprofile=cover.out -coverpkg=./...") {
 				t.Errorf("go test invocation wrong: %v", fake.Commands)
 			}
-			if !fake.Has("cover -func=cover.out") {
-				t.Errorf("cover -func not run: %v", fake.Commands)
+			if !fake.Has("go tool cover -func=cover.out") {
+				t.Errorf("go tool cover -func not run: %v", fake.Commands)
 			}
 		})
 	}
@@ -358,7 +358,7 @@ func TestTestCommandPropagatesGoTestFailure(t *testing.T) {
 	if code := Run([]string{"test"}, fake, &out, &errOut); code != 5 {
 		t.Fatalf("test exit = %d, want 5 (propagated)", code)
 	}
-	if fake.Has("cover") {
+	if fake.Has("go tool cover") {
 		t.Error("coverage gate ran despite failing tests")
 	}
 }
@@ -386,7 +386,7 @@ func TestCheckRunsLintThenTest(t *testing.T) {
 	})
 	fake := &testrunner.Fake{
 		OutputFn: func(name string, args []string) ([]byte, error) {
-			if name == "cover" {
+			if name == "go" {
 				return []byte("total:\t(statements)\t100.0%\n"), nil
 			}
 			return pandocEcho(name, args)

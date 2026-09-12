@@ -25,7 +25,11 @@ func runTest(e *env) int {
 		fmt.Fprintf(e.stdout, "==> go test failed (exit %d)\n", code)
 		return code
 	}
-	out, err := e.r.Output("cover", "-func="+coverProfile)
+	// Spawn `go tool cover` rather than the resolved cover binary:
+	// cover -func locates `go list` via runtime.GOROOT(), which the
+	// go command sets only for the tools it spawns (direct spawns
+	// see an empty GOROOT on trimmed toolchain installs).
+	out, err := e.r.Output("go", "tool", "cover", "-func="+coverProfile)
 	if err != nil {
 		fmt.Fprintf(e.stderr, "go-canon: %v\n", err)
 		return 1
