@@ -54,13 +54,15 @@ var TaskTool = Tool{
 	Version: "v3.53.1",
 }
 
-// CanonTool is go-canon itself as a tool-directive entry, installed by
-// migrate into consumer repos. Version is filled in at plan time with
-// the release the running binary was installed from.
-var CanonTool = Tool{
-	Name:   "go-canon",
-	Pkg:    CanonPkg,
-	Module: "github.com/SynthLuvlr/go-canon",
+// CanonTool returns go-canon's own tool-directive entry pinned at
+// version; migrate installs it into consumer repos.
+func CanonTool(version string) Tool {
+	return Tool{
+		Name:    "go-canon",
+		Pkg:     CanonPkg,
+		Module:  "github.com/SynthLuvlr/go-canon",
+		Version: version,
+	}
 }
 
 // CanonPkg is go-canon's own tool-directive package path.

@@ -60,10 +60,9 @@ func TestRunVersion(t *testing.T) {
 	if code := Run([]string{"--version"}, fake, &out, &errOut); code != 0 {
 		t.Errorf("Run(--version) = %d, want 0", code)
 	}
-	got := out.String()
-	version := strings.TrimSpace(strings.TrimPrefix(got, "go-canon "))
-	if !strings.HasPrefix(got, "go-canon ") || version == "" {
-		t.Errorf("stdout = %q, want a go-canon version line", got)
+	version, ok := strings.CutPrefix(out.String(), "go-canon ")
+	if !ok || strings.TrimSpace(version) == "" {
+		t.Errorf("stdout = %q, want a go-canon version line", out.String())
 	}
 }
 
