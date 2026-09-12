@@ -21,6 +21,45 @@ other half — orchestration, presets, gates, doctor, and migrate:
 - `go-canon migrate` — adopt go-canon in an existing repo (`--dry-run`
   supported)
 
+## Install
+
+go-canon is a module, not a binary to download: pin it as a `tool`
+directive (Go \>= 1.26 — the floor imposed by the pinned golangci-lint
+and gopls tool modules) and the toolchain compiles it locally.
+
+``` bash
+go get -tool github.com/SynthLuvlr/go-canon/cmd/go-canon@v0.1.2
+go tool go-canon --version
+```
+
+Adopt it across an existing repo in one shot (tool pins, Taskfile.yml,
+go-canon.toml, `.go-version`, housekeeping):
+
+``` bash
+go run github.com/SynthLuvr/go-canon/cmd/go-canon@v0.1.2 migrate
+```
+
+One-off use without pinning:
+
+``` bash
+go install github.com/SynthLuvr/go-canon/cmd/go-canon@latest
+```
+
+Binaries built from a `tool` directive or `go install` self-report their
+exact module version (`--version`, `doctor`, the usage banner); local
+`go run`/`go build` checkouts report `dev-<commit>`, and an ldflags
+stamp overrides both for custom builds.
+
+## Releases
+
+- annotated tags only: `git tag -a vX.Y.Z -m "X.Y.Z — notes"`; the tag
+  message is the release notes
+- pushing a `v*` tag runs the full pipeline and creates the GitHub
+  Release from the tag message — notes only, no prebuilt binaries
+- the durable record of changes is `CHANGELOG.md`
+
+go-canon is MIT-licensed — see `LICENSE`.
+
 ## Toolchain surface
 
 A consumer’s `go.mod` pins everything; go-canon shells out through

@@ -54,6 +54,18 @@ func TestRunUsage(t *testing.T) {
 	}
 }
 
+func TestRunVersion(t *testing.T) {
+	fake := &testrunner.Fake{}
+	var out, errOut strings.Builder
+	if code := Run([]string{"--version"}, fake, &out, &errOut); code != 0 {
+		t.Errorf("Run(--version) = %d, want 0", code)
+	}
+	version, ok := strings.CutPrefix(out.String(), "go-canon ")
+	if !ok || strings.TrimSpace(version) == "" {
+		t.Errorf("stdout = %q, want a go-canon version line", out.String())
+	}
+}
+
 func TestRunBadFlag(t *testing.T) {
 	writeModule(t, map[string]string{"go.mod": scratchGoMod})
 	fake := &testrunner.Fake{}

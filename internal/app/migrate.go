@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 
 	"github.com/SynthLuvlr/go-canon/internal/execx"
@@ -32,10 +31,10 @@ var gitignoreLines = []string{".go-canon/", "cover.out"}
 const gitattributesLine = "* text=auto eol=lf"
 
 // goDirective matches the `go 1.24` line of a go.mod.
-var goDirective = regexp.MustCompile(`(?m)^go\s+(\d+)\.(\d+)`)
+var goDirective = regexp.MustCompile(`(?m)^go\s+(\d+\.\d+)`)
 
 // action is one migration change: described for humans, executable for
-// real.
+// real. A nil apply marks a report-only entry, such as a warning.
 type action struct {
 	desc  string
 	apply func() error
@@ -96,6 +95,9 @@ func runMigrate(args []string, r execx.Runner, stdout, stderr io.Writer) int {
 	}()
 	for _, a := range actions {
 		fmt.Fprintf(stdout, "go-canon: %s\n", a.desc)
+		if a.apply == nil {
+			continue
+		}
 		if err := a.apply(); err != nil {
 			fmt.Fprintf(stderr, "go-canon: %v\n", err)
 			return 1
@@ -108,27 +110,36 @@ func runMigrate(args []string, r execx.Runner, stdout, stderr io.Writer) int {
 func planMigrate(r execx.Runner, root, gomod string) []action {
 	var actions []action
 
-	if m := goDirective.FindStringSubmatch(gomod); m != nil {
-		if minor, _ := strconv.Atoi(m[2]); minor < 24 {
-			actions = append(actions, action{
-				desc: "go mod edit -go=" + tools.GoVersion + " (tool directives need go >= 1.24)",
-				apply: func() error {
-					return runGo(r, "mod", "edit", "-go="+tools.GoVersion)
-				},
-			})
-		}
+	if m := goDirective.FindStringSubmatch(gomod); m != nil && !atLeast(m[1], tools.GoFloor) {
+		actions = append(actions, action{
+			desc: "go mod edit -go=" + tools.GoFloor + " (go-canon's pinned toolchain needs go >= " + tools.GoFloor + ")",
+			apply: func() error {
+				return runGo(r, "mod", "edit", "-go="+tools.GoFloor)
+			},
+		})
 	}
 
-	pinned := slices.Concat(tools.GoTools, []tools.Tool{tools.TaskTool, tools.CanonTool})
+	release := tools.CanonRelease()
+	pinned := slices.Concat(tools.GoTools, []tools.Tool{tools.TaskTool})
+	if release != "" {
+		pinned = append(pinned, tools.CanonTool(release))
+	}
 	for _, t := range pinned {
 		if strings.Contains(gomod, t.Pkg) {
 			continue
 		}
+		ref := t.Pkg + "@" + t.Version
 		actions = append(actions, action{
-			desc: "go get -tool " + t.Pkg + "@" + t.Version,
+			desc: "go get -tool " + ref,
 			apply: func() error {
-				return runGo(r, "get", "-tool", t.Pkg+"@"+t.Version)
+				return runGo(r, "get", "-tool", ref)
 			},
+		})
+	}
+
+	if release == "" && !strings.Contains(gomod, tools.CanonPkg) {
+		actions = append(actions, action{
+			desc: "warning: development build — pin go-canon manually: go get -tool " + tools.CanonPkg + "@vX.Y.Z",
 		})
 	}
 

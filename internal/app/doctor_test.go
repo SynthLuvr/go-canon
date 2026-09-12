@@ -84,11 +84,31 @@ func TestDoctorWarnsOutsideKnownGoodWindow(t *testing.T) {
 	}
 	for _, want := range []string{
 		"warn golangci-lint v9.9.9 is outside the known-good window",
-		"warn go 1.26.0 is older",
+		"ok   go 1.26.0 (floor >= " + tools.GoFloor,
 	} {
 		if !strings.Contains(out.String(), want) {
 			t.Errorf("doctor output missing %q:\n%s", want, out.String())
 		}
+	}
+}
+
+func TestDoctorWarnsBelowGoFloor(t *testing.T) {
+	writeModule(t, map[string]string{"go.mod": scratchGoMod})
+	withStubOSV(t, true)
+	fake := doctorFake()
+	orig := fake.OutputFn
+	fake.OutputFn = func(name string, args []string) ([]byte, error) {
+		if name == "go" && args[0] == "version" {
+			return []byte("go version go1.23.0 linux/amd64\n"), nil
+		}
+		return orig(name, args)
+	}
+	var out, errOut strings.Builder
+	if code := Run([]string{"doctor"}, fake, &out, &errOut); code != 0 {
+		t.Fatalf("doctor exit = %d, want 0 (below the floor is advisory)", code)
+	}
+	if !strings.Contains(out.String(), "warn go 1.23.0 is older than the required "+tools.GoFloor) {
+		t.Errorf("doctor output missing the below-floor warning:\n%s", out.String())
 	}
 }
 
