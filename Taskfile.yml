@@ -1,0 +1,31 @@
+# go-canon self-hosts: this repo is linted and tested by its own binary.
+# A module cannot list itself in its `tool` block, so the tasks below run
+# the freshly built local command instead of `go tool go-canon`.
+version: "3"
+
+tasks:
+  build:
+    desc: Compile all packages
+    cmd: go build ./...
+
+  lint:
+    desc: Full static pipeline via the local go-canon
+    cmd: go run ./cmd/go-canon lint
+
+  format:
+    desc: Auto-format and auto-fix
+    cmd: go run ./cmd/go-canon format
+
+  test:
+    desc: Test suite with the coverage gate
+    cmd: go run ./cmd/go-canon test
+
+  check:
+    desc: Everything — lint plus tests
+    cmds:
+      - task: lint
+      - task: test
+
+  doctor:
+    desc: Diagnose the environment
+    cmd: go run ./cmd/go-canon doctor

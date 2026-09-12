@@ -1,0 +1,52 @@
+version: "2"
+linters:
+  default: none
+  enable:
+    - copyloopvar
+    - dupl
+    - errcheck
+    - errorlint
+    - gosec
+    - govet
+    - intrange
+    - misspell
+    - nolintlint
+    - perfsprint
+    - revive
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+    - wrapcheck
+  settings:
+    dupl:
+      threshold: 150
+    errcheck:
+      exclude-functions:
+        # Writes to injected process streams; failures are unactionable.
+        - fmt.Fprint
+        - fmt.Fprintf
+        - fmt.Fprintln
+    revive:
+      rules:
+        - name: exported
+        - name: package-comments
+  exclusions:
+    generated: lax
+    rules:
+      - path: _test\.go
+        linters:
+          - unparam
+          - wrapcheck
+formatters:
+  enable:
+    - gci
+    - gofumpt
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - localmodule
+      custom-order: true

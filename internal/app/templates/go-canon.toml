@@ -1,0 +1,19 @@
+# go-canon local deltas over the built-in presets.
+# Everything below is optional; delete what you do not tune.
+
+[golangci]
+# Deep-merged over go-canon's embedded golangci-lint preset:
+# maps merge recursively, lists and scalars replace.
+# Mirrors the golangci-lint v2 config structure, e.g.:
+#
+#   [golangci.linters.settings.dupl]
+#   threshold = 200
+
+[test]
+# coverage-threshold = 80.0
+
+# [dupl]
+# tokens = 150
+
+# [markdown]
+# exclude = ["docs/legacy/*.md"]
