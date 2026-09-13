@@ -4,9 +4,9 @@ All notable changes to go-canon are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); releases are
 annotated tags whose message carries the release notes.
 
-## [Unreleased](https://github.com/SynthLuvr/go-canon/compare/v0.4.0...HEAD)
+## [Unreleased](https://github.com/SynthLuvr/go-canon/compare/v0.4.1...HEAD)
 
-## [0.4.0](https://github.com/SynthLuvr/go-canon/compare/v0.3.0...v0.4.0) - 2026-09-13
+## [0.4.1](https://github.com/SynthLuvr/go-canon/compare/v0.3.0...v0.4.1) - 2026-09-13
 
 ### Changed
 
@@ -17,10 +17,16 @@ annotated tags whose message carries the release notes.
   path is permanently dead and the new owner’s `go-canon` path was never
   poisoned — so the module path now matches the repository, the
   `go-canon` command, and the ts-canon/canonist naming.
-- proxy.golang.org holds a `go-canon@v0.3.0` entry fetched through
-  GitHub’s repo redirect while the module still declared the `gocanon`
-  path; it rejects client-side (module path mismatch), so consumers must
-  pin v0.4.0 or later.
+
+### Fixed
+
+- proxy.golang.org entries `go-canon@v0.3.0` and `go-canon@v0.4.0` were
+  cached while the module still declared the `gocanon` path (fetched
+  through GitHub’s repo redirects) and reject client-side with a module
+  path mismatch; v0.4.1 is the first release that resolves under the
+  `go-canon` path. The bad v0.4.0 tag pointed at the wrong commit for a
+  few minutes and was deleted, but the proxy cache is immutable —
+  consumers must pin v0.4.1 or later.
 
 ## [0.3.0](https://github.com/SynthLuvr/go-canon/compare/v0.2.0...v0.3.0) - 2026-09-13
 

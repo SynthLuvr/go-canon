@@ -71,7 +71,7 @@ const CanonPkg = "github.com/SynthLuvr/go-canon/cmd/go-canon"
 // CanonVersion overrides the resolved build version when stamped at
 // link time:
 //
-//	go build -ldflags "-X github.com/SynthLuvr/go-canon/internal/tools.CanonVersion=v0.4.0" ./cmd/go-canon
+//	go build -ldflags "-X github.com/SynthLuvr/go-canon/internal/tools.CanonVersion=v0.4.1" ./cmd/go-canon
 //
 // The default marks an unstamped build.
 var CanonVersion = "dev"
