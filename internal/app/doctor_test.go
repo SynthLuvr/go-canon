@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SynthLuvr/gocanon/internal/testrunner"
-	"github.com/SynthLuvr/gocanon/internal/tools"
+	"github.com/SynthLuvr/go-canon/internal/testrunner"
+	"github.com/SynthLuvr/go-canon/internal/tools"
 )
 
 // doctorFake answers the doctor probes with a healthy environment.
