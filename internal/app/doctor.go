@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/SynthLuvlr/gocanon/internal/execx"
-	"github.com/SynthLuvlr/gocanon/internal/module"
-	"github.com/SynthLuvlr/gocanon/internal/tools"
+	"github.com/SynthLuvr/gocanon/internal/execx"
+	"github.com/SynthLuvr/gocanon/internal/module"
+	"github.com/SynthLuvr/gocanon/internal/tools"
 )
 
 // osvCheck reports whether the OSV database govulncheck queries is

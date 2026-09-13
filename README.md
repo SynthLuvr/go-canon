@@ -28,7 +28,7 @@ directive (Go \>= 1.26 — the floor imposed by the pinned golangci-lint
 and gopls tool modules) and the toolchain compiles it locally.
 
 ``` bash
-go get -tool github.com/SynthLuvlr/gocanon/cmd/go-canon@v0.1.2
+go get -tool github.com/SynthLuvr/gocanon/cmd/go-canon@v0.3.0
 go tool go-canon --version
 ```
 
@@ -36,7 +36,7 @@ Adopt it across an existing repo in one shot (tool pins, Taskfile.yml,
 go-canon.toml, `.go-version`, housekeeping):
 
 ``` bash
-go run github.com/SynthLuvr/gocanon/cmd/go-canon@v0.1.2 migrate
+go run github.com/SynthLuvr/gocanon/cmd/go-canon@v0.3.0 migrate
 ```
 
 One-off use without pinning:
@@ -68,7 +68,7 @@ through a shell or a `.cmd`/`.ps1` shim):
 
 ``` go
 tool (
-    github.com/SynthLuvlr/gocanon/cmd/go-canon
+    github.com/SynthLuvr/gocanon/cmd/go-canon
     github.com/go-task/task/v3/cmd/task
     github.com/golangci/golangci-lint/v2/cmd/golangci-lint
     golang.org/x/vuln/cmd/govulncheck

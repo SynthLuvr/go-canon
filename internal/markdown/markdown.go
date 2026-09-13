@@ -9,8 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/SynthLuvlr/gocanon/internal/execx"
-	"github.com/SynthLuvlr/gocanon/internal/tools"
+	"github.com/SynthLuvr/gocanon/internal/execx"
+	"github.com/SynthLuvr/gocanon/internal/tools"
 )
 
 // skipDirs are never walked for markdown files.
