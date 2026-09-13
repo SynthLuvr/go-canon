@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SynthLuvlr/go-canon/internal/testrunner"
+	"github.com/SynthLuvlr/gocanon/internal/testrunner"
 )
 
 // writeTree creates files under root from a name → content map.

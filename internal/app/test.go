@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"github.com/SynthLuvlr/go-canon/internal/cover"
+	"github.com/SynthLuvlr/gocanon/internal/cover"
 )
 
 // coverProfile is the coverage artifact written at the module root.

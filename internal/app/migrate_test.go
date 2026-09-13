@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SynthLuvlr/go-canon/internal/testrunner"
-	"github.com/SynthLuvlr/go-canon/internal/tools"
+	"github.com/SynthLuvlr/gocanon/internal/testrunner"
+	"github.com/SynthLuvlr/gocanon/internal/tools"
 )
 
 const oldGoMod = "module nova\n\ngo 1.22\n"

@@ -60,18 +60,18 @@ func CanonTool(version string) Tool {
 	return Tool{
 		Name:    "go-canon",
 		Pkg:     CanonPkg,
-		Module:  "github.com/SynthLuvlr/go-canon",
+		Module:  "github.com/SynthLuvlr/gocanon",
 		Version: version,
 	}
 }
 
 // CanonPkg is go-canon's own tool-directive package path.
-const CanonPkg = "github.com/SynthLuvlr/go-canon/cmd/go-canon"
+const CanonPkg = "github.com/SynthLuvlr/gocanon/cmd/go-canon"
 
 // CanonVersion overrides the resolved build version when stamped at
 // link time:
 //
-//	go build -ldflags "-X github.com/SynthLuvlr/go-canon/internal/tools.CanonVersion=v0.1.2" ./cmd/go-canon
+//	go build -ldflags "-X github.com/SynthLuvlr/gocanon/internal/tools.CanonVersion=v0.1.2" ./cmd/go-canon
 //
 // The default marks an unstamped build.
 var CanonVersion = "dev"

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/SynthLuvlr/go-canon/internal/testrunner"
+	"github.com/SynthLuvlr/gocanon/internal/testrunner"
 )
 
 // writeModule creates a scratch module in a temp dir and chdirs into it.

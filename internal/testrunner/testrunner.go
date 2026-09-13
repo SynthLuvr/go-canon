@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/SynthLuvlr/go-canon/internal/execx"
+	"github.com/SynthLuvlr/gocanon/internal/execx"
 )
 
 // Fake records every command and answers from test-provided closures.

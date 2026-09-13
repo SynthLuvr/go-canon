@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/SynthLuvlr/go-canon/internal/golangci"
-	"github.com/SynthLuvlr/go-canon/internal/markdown"
+	"github.com/SynthLuvlr/gocanon/internal/golangci"
+	"github.com/SynthLuvlr/gocanon/internal/markdown"
 )
 
 // runLint runs the fail-fast static pipeline: go build, golangci-lint

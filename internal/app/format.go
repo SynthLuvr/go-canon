@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/SynthLuvlr/go-canon/internal/markdown"
+	"github.com/SynthLuvlr/gocanon/internal/markdown"
 )
 
 // runFormat applies every formatter in order: modernize -fix,

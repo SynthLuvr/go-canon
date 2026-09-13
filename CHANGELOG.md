@@ -4,7 +4,19 @@ All notable changes to go-canon are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); releases are
 annotated tags whose message carries the release notes.
 
-## [Unreleased](https://github.com/SynthLuvlr/go-canon/compare/v0.1.1...HEAD)
+## [Unreleased](https://github.com/SynthLuvlr/gocanon/compare/v0.2.0...HEAD)
+
+## [0.2.0](https://github.com/SynthLuvlr/gocanon/compare/v0.1.2...v0.2.0) - 2026-09-13
+
+### Changed
+
+- Module and repository renamed to `github.com/SynthLuvlr/gocanon`; the
+  command is still `go-canon`. proxy.golang.org cached a fetch failure
+  for the old module path from before the repository became public, so
+  the rename gives the module a clean path in the public Go module
+  ecosystem. Consumers must update import paths and `tool` directives.
+
+## [0.1.2](https://github.com/SynthLuvlr/gocanon/compare/v0.1.1...v0.1.2) - 2026-09-12
 
 ### Added
 
@@ -38,7 +50,7 @@ annotated tags whose message carries the release notes.
   because the version was a hand-bumped constant; versions are now
   resolved from build metadata.
 
-## [0.1.1](https://github.com/SynthLuvr/go-canon/compare/v0.1.0...v0.1.1) - 2026-09-12
+## [0.1.1](https://github.com/SynthLuvr/gocanon/compare/v0.1.0...v0.1.1) - 2026-09-12
 
 ### Added
 
@@ -54,7 +66,7 @@ annotated tags whose message carries the release notes.
 
 - The Taskfile template written by `migrate`.
 
-## [0.1.0](https://github.com/SynthLuvr/go-canon/releases/tag/v0.1.0) - 2026-09-12
+## [0.1.0](https://github.com/SynthLuvr/gocanon/releases/tag/v0.1.0) - 2026-09-12
 
 Initial release: the shared Go toolchain — one meta-tool owning every
 gate and preset. `lint`, `format`, `test`, `check`, `doctor`, and

@@ -5,8 +5,8 @@ package main
 import (
 	"os"
 
-	"github.com/SynthLuvlr/go-canon/internal/app"
-	"github.com/SynthLuvlr/go-canon/internal/execx"
+	"github.com/SynthLuvlr/gocanon/internal/app"
+	"github.com/SynthLuvlr/gocanon/internal/execx"
 )
 
 func main() {
