@@ -9,10 +9,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/SynthLuvlr/gocanon/internal/config"
-	"github.com/SynthLuvlr/gocanon/internal/execx"
-	"github.com/SynthLuvlr/gocanon/internal/module"
-	"github.com/SynthLuvlr/gocanon/internal/tools"
+	"github.com/SynthLuvr/gocanon/internal/config"
+	"github.com/SynthLuvr/gocanon/internal/execx"
+	"github.com/SynthLuvr/gocanon/internal/module"
+	"github.com/SynthLuvr/gocanon/internal/tools"
 )
 
 // usage is the top-level help text, stamped with this build's version.

@@ -13,8 +13,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/SynthLuvlr/gocanon/internal/execx"
-	"github.com/SynthLuvlr/gocanon/internal/tools"
+	"github.com/SynthLuvr/gocanon/internal/execx"
+	"github.com/SynthLuvr/gocanon/internal/tools"
 )
 
 //go:embed templates/Taskfile.yml

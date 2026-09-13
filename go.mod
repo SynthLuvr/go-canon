@@ -1,4 +1,4 @@
-module github.com/SynthLuvlr/gocanon
+module github.com/SynthLuvr/gocanon
 
 go 1.26.0
 
