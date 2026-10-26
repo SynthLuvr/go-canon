@@ -6,6 +6,23 @@ annotated tags whose message carries the release notes.
 
 ## [Unreleased](https://github.com/SynthLuvr/go-canon/compare/v0.4.1...HEAD)
 
+### Changed
+
+- Dependency refresh. Go toolchain 1.27.1 → 1.27.3 (`.go-version` and
+  the `go.mod` toolchain line); tool directives golangci-lint v2.13.2 →
+  v2.15.0, govulncheck v1.4.0 → v1.9.0, task v3.53.1 → v3.54.0, and the
+  transitive module graph to current.
+- The `modernize` tool directive moved: gopls v0.24.0 dropped the
+  standalone command (`golang.org/x/tools/gopls/internal/...`), and it
+  now ships in `golang.org/x/tools` itself at
+  `golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize`
+  (v0.52.0). Same multichecker CLI — `modernize` / `modernize -fix` — so
+  go-canon’s lint and format steps are unchanged; the known-good pin in
+  `internal/tools` tracks the new package path and module.
+- CI installs pandoc 3.12.1 instead of 3.11. Verified first that 3.12.1
+  produces byte-identical `pandoc -t gfm` output for every tracked
+  markdown file, so the markdown gate is unaffected.
+
 ## [0.4.1](https://github.com/SynthLuvr/go-canon/compare/v0.3.0...v0.4.1) - 2026-09-13
 
 ### Changed
