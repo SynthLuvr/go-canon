@@ -72,7 +72,7 @@ tool (
     github.com/go-task/task/v3/cmd/task
     github.com/golangci/golangci-lint/v2/cmd/golangci-lint
     golang.org/x/vuln/cmd/govulncheck
-    golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize
+    golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize
 )
 ```
 

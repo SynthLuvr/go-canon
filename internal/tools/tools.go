@@ -29,19 +29,19 @@ var GoTools = []Tool{
 		Name:    "golangci-lint",
 		Pkg:     "github.com/golangci/golangci-lint/v2/cmd/golangci-lint",
 		Module:  "github.com/golangci/golangci-lint/v2",
-		Version: "v2.13.2",
+		Version: "v2.15.0",
 	},
 	{
 		Name:    "govulncheck",
 		Pkg:     "golang.org/x/vuln/cmd/govulncheck",
 		Module:  "golang.org/x/vuln",
-		Version: "v1.4.0",
+		Version: "v1.9.0",
 	},
 	{
 		Name:    "modernize",
-		Pkg:     "golang.org/x/tools/gopls/internal/analysis/modernize/cmd/modernize",
-		Module:  "golang.org/x/tools/gopls",
-		Version: "v0.23.0",
+		Pkg:     "golang.org/x/tools/go/analysis/passes/modernize/cmd/modernize",
+		Module:  "golang.org/x/tools",
+		Version: "v0.52.0",
 	},
 }
 
@@ -51,7 +51,7 @@ var TaskTool = Tool{
 	Name:    "task",
 	Pkg:     "github.com/go-task/task/v3/cmd/task",
 	Module:  "github.com/go-task/task/v3",
-	Version: "v3.53.1",
+	Version: "v3.54.0",
 }
 
 // CanonTool returns go-canon's own tool-directive entry pinned at
